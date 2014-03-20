@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <h1>Welcome to the GEB MU Puzzle</h1>
+    
+    <textarea id="puzzleArea" rows="4" cols="50" disabled="disabled">MI</textarea>
+    <textarea id="theoremArea" rows="4" cols="50" disabled="disabled">Your Theorems</textarea>
+    
+    <br/>
+    <button style="width: 75px; height: 25px" onclick="rule1();">Rule 1</button>
+    <button style="width: 75px; height: 25px" onclick="rule2();">Rule 2</button>
+    <button style="width: 75px; height: 25px" onclick="rule3();">Rule 3</button>
+    <button style="width: 75px; height: 25px" onclick="rule4();">Rule 4</button>
+    <button style="width: 75px; height: 25px" onclick="undo();">Undo</button>
+
+    <script type="text/javascript">
+
+        var previous = new Stack();
+
+        //r1 last letter  I -> IU
+        this.rule1 = function () {
+            
+            var txt = document.getElementById("puzzleArea");
+            previous.push(txt.value);
+
+
+            var len = txt.value.length;
+            var lastLetter = txt.value.charAt(len-1);
+
+            if(lastLetter.toLowerCase() === 'i')
+                txt.value = txt.value.substring(0, len - 1) + 'IU';
+
+            var tTxt = document.getElementById("theoremArea");
+            tTxt.value += '\n' + previous.peek() + "-->" + txt.value;
+        };
+
+        
+        //r2 Mx -> Mxx  MUM => MUMUM
+        this.rule2 = function() {
+
+            var txt = document.getElementById("puzzleArea");
+            previous.push(txt.value);
+            
+            var len = txt.value.length;
+
+
+            if (txt.value.charAt(0).toLowerCase() === 'm' && len > 1) {
+                var lastLetters = txt.value.substring(1, len);
+
+                console.log(lastLetters);
+
+                txt.value += lastLetters;
+               
+            }
+            
+            var tTxt = document.getElementById("theoremArea");
+            tTxt.value += '\n' + previous.peek() + "-->" + txt.value;
+           
+        };
+
+        //r3 - III -> U anywhere in the string
+        this.rule3 = function() {
+
+            var txt = document.getElementById("puzzleArea");
+            previous.push(txt.value);
+
+            var start = document.getElementById("puzzleArea").selectionStart;
+            var end = document.getElementById("puzzleArea").selectionEnd;
+
+            if (end > start) {
+                var selectedText = window.getSelection().toString();
+
+                if (selectedText.toLowerCase() === 'iii') {
+                    txt.value = txt.value.substr(0, start) + 'U' + txt.value.substr(end, txt.value.length);
+                }
+            }
+
+            var tTxt = document.getElementById("theoremArea");
+            tTxt.value += '\n' + previous.peek() + "-->" + txt.value;
+        };
+
+
+        //r4 - UU -> _ 
+        this.rule4 = function() {
+            var txt = document.getElementById("puzzleArea");
+            previous.push(txt.value);
+
+            var start = document.getElementById("puzzleArea").selectionStart;
+            var end = document.getElementById("puzzleArea").selectionEnd;
+
+            if (end > start) {
+                var selectedText = window.getSelection().toString();
+
+                if (selectedText.toLowerCase() === 'uu') {
+                    txt.value = txt.value.substr(0, start) + txt.value.substr(end, txt.value.length);
+                }
+            }
+
+            var tTxt = document.getElementById("theoremArea");
+            tTxt.value += '\n' + previous.peek() + "-->" + txt.value;
+        };
+
+        this.undo = function() {
+            var txt = document.getElementById("puzzleArea");
+
+            txt.value = previous.pop();
+
+            var tTxt = document.getElementById("theoremArea");
+            tTxt.value += '\n' + previous + "-->" + txt.value;
+        };
+
+
+        function Stack() {
+            this.stac = new Array();
+            this.pop = function() {
+                return this.stac.pop();
+            };
+            this.push = function(item) {
+                this.stac.push(item);
+            };
+            this.peek = function() {
+                var peeked = this.pop();
+                this.push(peeked);
+                return peeked;
+            };
+        }
+
+    </script>
+</body>
+</html>
